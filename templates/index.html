@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pastelada dos Jovens</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+  <style>
+    body {
+      background: linear-gradient(to bottom right, hsl(0, 0%, 67%), #ffffff);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      border-radius: 2rem;
+    }
+    
+    .card {
+      font-size: 13px;
+      text-transform: uppercase;
+      margin: auto;
+      max-width: 380px;
+      border: none;
+      border-radius: 2rem;
+      box-shadow: 0 0.5rem 3rem rgba(0, 0, 0, 0.3);
+    }
+    .card-header h2{
+      font-size: 26px;
+    }
+    .mb-0{
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .mb-01{
+      color: white;
+      margin-top: 20px;
+      margin-bottom: 0;
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    .card-header{
+      color: black;
+      background-color: #a200ff;
+      padding: 2rem;
+      border-radius: 2rem;
+      text-align: center;
+      font-size: 15px;
+    }
+    .card-body form {
+      background-color: #ffffff;
+      padding: 2rem;
+      border-radius: 2rem;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #000000;
+      border-radius: 2rem;
+    }
+    .form-control {
+      margin-bottom: 15px;
+      border-radius: 0.5rem;
+    }
+    .btn-custom {
+      background-color: #a200ff;
+      color: white;
+      font-weight: bold;
+    }
+    .btn-custom:hover {
+      background-color: #660096;
+    }
+    #total-price {
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    #pix-copia-e-cola {
+      word-break: break-all;
+      font-size: 0.9rem;
+      background: #f3f3f3;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 15px;
+    }
+    .copy-btn {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h2>Pastelada Jovens IASD</h2>
+        <p class="mb-0">Retirada: 17 de maio, a partir das 19h</p>
+        <p class="mb-01">Local: Casa da Eloyse!! <br> Sera enviado a localizacao pelo whats</p>
+      </div>
+      <div class="card-body">
+        <form id="order-form">
+          <input type="text" class="form-control" id="nome" placeholder="Seu nome" required>
+          <input type="text" class="form-control" id="telefone" placeholder="Seu WhatsApp" required>
+
+          <label class="form-label">Pastel de Carne R$8,00</label>
+          <input type="number" class="form-control" id="carne" min="0" value="0">
+
+          <label class="form-label">Pastel de Frango com Palmito R$8,00</label>
+          <input type="number" class="form-control" id="frango" min="0" value="0">
+
+          <label class="form-label">Pastel de Brócolis com Queijo R$8,00</label>
+          <input type="number" class="form-control" id="brocolis" min="0" value="0">
+
+          <p id="total-price">Total: R$ 0,00</p>
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-custom">Gerar Pagamento PIX</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="qrPixModal" tabindex="-1" aria-labelledby="qrPixModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="qrPixModalLabel">Pagamento via Pix</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="qr-image" src="static/qr-pix.png" alt="QR Code Pix" style="max-width: 300px;">
+          <p class="mt-3"><strong id="pix-valor"></strong></p>
+          <div id="pix-copia-e-cola">00020126710014br.gov.bcb.pix0129andersonfreitasa949@gmail.com0216Anderson Freitas5204000053039865802BR5925Anderson de Souza Freitas6008Brasilia62230519daqr2263900228261206304E17B</div>
+          <button class="btn btn-secondary copy-btn" onclick="copiarPix()">Copiar código Pix</button>
+          <a id="whatsapp-link" href="https://wa.me/5547991577857" target="_blank" class="btn btn-success mt-3">Enviar comprovante via WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function updateTotal() {
+      const carne = parseInt(document.getElementById('carne').value) || 0;
+      const frango = parseInt(document.getElementById('frango').value) || 0;
+      const brocolis = parseInt(document.getElementById('brocolis').value) || 0;
+      const total = (carne + frango + brocolis) * 8;
+      document.getElementById("total-price").textContent = `Total: R$ ${total.toFixed(2)}`;
+      return total;
+    }
+
+    document.getElementById('carne').addEventListener('input', updateTotal);
+    document.getElementById('frango').addEventListener('input', updateTotal);
+    document.getElementById('brocolis').addEventListener('input', updateTotal);
+
+    document.getElementById("order-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const nome = document.getElementById("nome").value;
+      const telefone = document.getElementById("telefone").value;
+      const carne = parseInt(document.getElementById("carne").value) || 0;
+      const frango = parseInt(document.getElementById("frango").value) || 0;
+      const brocolis = parseInt(document.getElementById("brocolis").value) || 0;
+      const total = (carne + frango + brocolis) * 8;
+
+      // 1. Envia para o banco
+      fetch("/registrar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ nome, telefone, carne, frango, brocolis })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status === "success") {
+          // 2. Mostra o QR modal só se salvou com sucesso
+          document.getElementById("pix-valor").textContent = `Valor: R$ ${total.toFixed(2)}`;
+          const qrModal = new bootstrap.Modal(document.getElementById('qrPixModal'));
+          qrModal.show();
+        } else {
+          alert("Erro ao salvar o pedido!");
+        }
+      })
+      .catch(error => {
+        console.error("Erro ao registrar pedido:", error);
+        alert("Erro ao salvar o pedido!");
+      });
+    });
+
+    function copiarPix() {
+      const texto = document.getElementById("pix-copia-e-cola").textContent;
+      navigator.clipboard.writeText(texto).then(() => {
+        alert("Código Pix copiado com sucesso!");
+      });
+    }
+
+
+  </script>
+</body>
+</html>
